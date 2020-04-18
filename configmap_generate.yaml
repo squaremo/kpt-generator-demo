@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  image: helloworld:v2
+kind: ConfigMap
+metadata:
+  annotations:
+    config.kubernetes.io/function: |
+      container: {image: generate}
+  name: generate
