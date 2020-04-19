@@ -4,3 +4,10 @@ metadata:
   name: kpt-demo
 packageMetadata:
   shortDescription: Demo of generating resources with kpt
+openAPI:
+  definitions:
+    io.k8s.cli.setters.image:
+      x-k8s-cli:
+        setter:
+          name: image
+          value: helloworld:v1

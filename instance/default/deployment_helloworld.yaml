@@ -13,4 +13,4 @@ spec:
         app: helloworld
     spec:
       containers:
-      - image: helloworld:v2
+      - image: helloworld:v1
