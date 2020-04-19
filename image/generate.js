@@ -19,47 +19,21 @@ const app = 'helloworld';
 const functionConfigName = 'generate';
 const generateImage = 'generate';
 
+// In case some values are not supplied in the functionConfig.
+const defaultData = {
+  namespace: 'default',
+  image: 'helloworld',
+};
+
 async function main() {
   const input = await read(stdin, { format: Format.YAML });
 
-  // If run using `kpt fn run . --image=generate`, this'll get a
-  // functionConfig made for it by `kpt fn`. I can use that as a
-  // bootstrapping mechanism, by including it in the resources output
-  // so it's written to the directory. The generation step can then be
-  // invoked with `kpt fn run .` the next time.
-  const defaultData = {
-    namespace: 'default',
-    image: 'helloworld',
-  };
 
-  // If run using `kpt source . | jk run ./image/generate.js` there
-  // will be no function config; this constructs a default for that
-  // situation.
-  const defaultFunctionConfig = new core.v1.ConfigMap(functionConfigName, {
-    metadata: {
-      annotations: {
-        'config.k8s.io/function': stringify({
-          container: {
-            image: generateImage,
-          },
-        }, Format.YAML),
-      },
-    },
-    data: defaultData,
-  });
-
-  const { functionConfig = defaultFunctionConfig } = input;
+  const { functionConfig = {} } = input;
   const config = Object.assign({}, defaultData, functionConfig.data || {});
   const { namespace, image } = config;
 
   log(config);
-
-  // unconditionally set the functionConfig name to something I like
-  const functionConfigResource = merge(functionConfig, {
-    metadata: {
-      name: functionConfigName,
-    },
-  });
 
   const items = [
     new apps.v1.Deployment('helloworld', {
@@ -92,9 +66,8 @@ async function main() {
         ],
       },
     }),
-
-    functionConfigResource,
   ];
+
   const rl = new ResourceList(items);
   log(rl);
   write(rl, stdout, { format: Format.YAML });
