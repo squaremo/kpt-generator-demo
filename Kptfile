@@ -11,3 +11,8 @@ openAPI:
         setter:
           name: image
           value: helloworld:v1
+    io.k8s.cli.setters.namespace:
+      x-k8s-cli:
+        setter:
+          name: namespace
+          value: default
